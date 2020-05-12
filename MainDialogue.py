@@ -1,4 +1,3 @@
-import PokeStats
 import GameModes
 import random
 from random import shuffle
@@ -58,6 +57,7 @@ def gen_selector():
 
     return select
 
+
 def mode_select(select):
     while 1 < 2:
         mode = input("Now select a mode, easy medium, hard\n")
@@ -65,8 +65,8 @@ def mode_select(select):
             GameModes.easy_mode(select)
             break
         elif mode.lower() == "medium":
-            # GameModes.medium_mode(select)
-            print("placeholder")
+            GameModes.medium_mode(select)
+            # print("placeholder")
             break
         elif mode.lower() == "hard":
             # GameModes.hard_mode(select)
@@ -76,6 +76,4 @@ def mode_select(select):
             print("incorrect")
 
 
-
 runPokeGuesser()
-

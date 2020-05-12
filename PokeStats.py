@@ -1,9 +1,8 @@
-global randomPoke
 
+class Pokemon:
 
+    def __init__(self, randomPoke):
+        self.idnum = randomPoke
 
-def printPoke():
-    #print(randomPoke)
-    pass
-
-print("lol")
+    def printPoke(self):
+        print(self.idnum)
