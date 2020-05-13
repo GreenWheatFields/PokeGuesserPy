@@ -1,4 +1,5 @@
 import GameModes
+import PokeStats
 import random
 from random import shuffle
 
@@ -76,4 +77,7 @@ def mode_select(select):
             print("incorrect")
 
 
-runPokeGuesser()
+# runPokeGuesser()
+poke = PokeStats.Pokemon(1)
+poke.printStats()
+print(poke.name)

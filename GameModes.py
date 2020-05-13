@@ -18,17 +18,17 @@ def easy_mode(select):
 def medium_mode(select):
     global total_shown, one
     one = 1
-    print(select)
     while one < 2:
         if len(select) == 0:
             print("out of poke")
             break
-        print(select)
-        poke = PokeStats.Pokemon(select[0])
+        poke = PokeStats.Pokemon(1) #select[0]
         select.pop(0)
-        poke.printPoke()
+        poke.printStats()
+        print(poke.idnum)
         poke = None
         print("test")
+        one +=1
 
 
 def hard_mode(select):
