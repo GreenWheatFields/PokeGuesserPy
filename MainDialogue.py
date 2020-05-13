@@ -78,6 +78,9 @@ def mode_select(select):
 
 
 # runPokeGuesser()
-poke = PokeStats.Pokemon(1)
+poke = PokeStats.Pokemon(78)
 poke.printStats()
 print(poke.name)
+print(poke.is2Types)
+print(poke.type2)
+print(poke.type1)
