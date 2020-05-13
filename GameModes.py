@@ -22,7 +22,7 @@ def medium_mode(select):
         if len(select) == 0:
             print("out of poke")
             break
-        poke = PokeStats.Pokemon(1) #select[0]
+        poke = PokeStats.Pokemon(29) #select[0]
         select.pop(0)
         poke.printStats()
         print(poke.idnum)
