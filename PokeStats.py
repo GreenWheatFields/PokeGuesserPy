@@ -1,11 +1,13 @@
 import requests as r
 import json
+import lxml
+import textwrap
 from bs4 import BeautifulSoup
 
 
 class Pokemon:
 
-    def __init__(self, randomPoke):
+    def __init__(self, randomPoke, mode):
         self.idnum = randomPoke
         self.stats = json.loads(r.get("https://pokeapi.co/api/v2/pokemon/" + str(self.idnum)).text)
         self.name = self.stats["name"].capitalize()
@@ -17,7 +19,10 @@ class Pokemon:
         self.frontSprite = self.stats["sprites"]["front_default"]
         '''parse bulbapedia'''
         # check name for exceptions
-        self.name, self.parseKey = Pokemon.checkName(self)
+        self.name, self.parseKey, self.urlName = Pokemon.checkName(self)
+        bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text,
+                                   features="lxml")
+        self.desc = Pokemon.getDesc(self, bulbapedia, mode)
 
     def printStats(self):
         pass
@@ -48,9 +53,45 @@ class Pokemon:
     def checkName(self):
 
         if self.name == "Nidoran-f":
-            self.name = "Nidoran♀"
-            self.parseKey = "Nidoran♀"
+            self.name = "Nidoran f"
+            self.parseKey = self.urlName = "Nidoran♀"
         elif self.name == "Farfetchd":
-            self.
+            self.name = self.parseKey = "Farfetched'd"
+            self.urlName = "Farfetch%27d"
+        elif self.name == "Mr-mime":
+            self.name = self.parseKey = "Mr. Mime"
+            self.urlName = "Mr._Mime"
+        elif self.name == "Mime-jr":
+            self.name = self.parseKey = "Mime Jr."
+            self.urlName = "Mime_Jr."
+        elif self.name == "Meloetta-aria":
+            self.name = self.parseKey = self.urlName = "Meloetta"
+        elif self.name == "Type-null":
+            self.name = self.parseKey = "Type: Null"
+            self.urlName = "Type:_Null"
+        elif "Tapu-" in self.name:
+            self.name = self.name.replace("-", " ")
+            self.name = self.parseKey = self.name[:5].capitalize() + self.name[5:].capitalize()
+            self.urlName = self.name.replace(" ", "_")
+        else:
+            self.parseKey = self.urlName = self.name
 
-        return self.name, self.parseKey
+        return self.name, self.parseKey, self.urlName
+
+    def getDesc(self, bulbapedia, mode):
+        print(bulbapedia.select_one("#mw-content-text > p:nth-child(3)").text)
+
+        parseText = 3
+        self.desc = ""
+        if mode == "easy":
+            while parseText <= 8:
+                try:
+                    self.desc += bulbapedia.select_one("#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
+                except AttributeError:
+                    pass
+                parseText += 1
+        #print("final")
+        wrapper = textwrap.TextWrapper(width=75)
+        self.desc = wrapper.fill(text=self.desc)
+        print(self.desc)
+        return self.desc

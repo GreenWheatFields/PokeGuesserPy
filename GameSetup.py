@@ -63,10 +63,10 @@ def mode_select(select):
     while 1 < 2:
         mode = input("Now select a mode, easy medium, hard\n")
         if mode.lower() == "easy":
-            GameModes.easy_mode(select)
+            GameModes.easy_mode(select, mode)
             break
         elif mode.lower() == "medium":
-            GameModes.medium_mode(select)
+            GameModes.medium_mode(select, mode)
             # print("placeholder")
             break
         elif mode.lower() == "hard":
@@ -78,5 +78,4 @@ def mode_select(select):
 
 
 # runPokeGuesser()
-poke = PokeStats.Pokemon(28)
-poke.checkName()
+poke = PokeStats.Pokemon(random.randrange(807), "easy")
