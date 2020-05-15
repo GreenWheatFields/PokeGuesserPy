@@ -78,4 +78,6 @@ def mode_select(select):
 
 
 # runPokeGuesser()
-poke = PokeStats.Pokemon(random.randrange(807), "easy")
+a = [98,98,67,51,23,705,205]
+shuffle(a)
+GameModes.medium_mode(a, "medium")

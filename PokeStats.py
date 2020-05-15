@@ -20,9 +20,9 @@ class Pokemon:
         '''parse bulbapedia'''
         # check name for exceptions
         self.name, self.parseKey, self.urlName = Pokemon.checkName(self)
-        bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text,
-                                   features="lxml")
+        bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
         self.desc = Pokemon.getDesc(self, bulbapedia, mode)
+        self.detailedSprite = Pokemon.getDetailedSprite(self, bulbapedia)
 
     def printStats(self):
         pass
@@ -79,19 +79,24 @@ class Pokemon:
         return self.name, self.parseKey, self.urlName
 
     def getDesc(self, bulbapedia, mode):
-        print(bulbapedia.select_one("#mw-content-text > p:nth-child(3)").text)
-
+        lengths = {"easy": 7, "medium": 6, "hard": 3}
         parseText = 3
         self.desc = ""
-        if mode == "easy":
-            while parseText <= 8:
-                try:
-                    self.desc += bulbapedia.select_one("#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
-                except AttributeError:
-                    pass
-                parseText += 1
+        while parseText <= lengths.get(mode):
+            try:
+                self.desc += bulbapedia.select_one("#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
+            except AttributeError:
+                pass
+            parseText += 1
         #print("final")
         wrapper = textwrap.TextWrapper(width=75)
         self.desc = wrapper.fill(text=self.desc)
-        print(self.desc)
+        self.desc = (self.desc[:350] + '...') if len(self.desc) > 350 else self.desc
         return self.desc
+
+    def getDetailedSprite(self, bulbapdeia):
+        # find all elements with img tag and width=250, the first index of that list is what
+        # i want, extract the link with "src" and splice the first two characters "//" to get a link
+        self.detailedSprite = bulbapdeia.find_all("img", width="250")[0]["src"][2:]
+        return self.detailedSprite
+
