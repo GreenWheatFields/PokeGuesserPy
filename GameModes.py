@@ -1,5 +1,5 @@
 import PokeStats
-adimport sys
+import sys
 
 total_shown, one = 0, 1
 tries = 0
