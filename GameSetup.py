@@ -10,7 +10,7 @@ def runPokeGuesser():
 
 
 def gen_selector():
-    global select
+    global select #might be unesseasry
     gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
     while 1 < 2:
         if gen_select.lower() == "gen 1":
@@ -52,7 +52,8 @@ def gen_selector():
 
     for i in range(lower_bind, upper_bind + 1):
         select.append(i)
-        shuffle(select)
+
+    shuffle(select)
 
     print(gen_select.capitalize() + " Selected: ")
 
@@ -78,6 +79,6 @@ def mode_select(select):
 
 
 # runPokeGuesser()
-a = [98,98,67,51,23,705,205]
+a = list(range(1, 807))
 shuffle(a)
 GameModes.medium_mode(a, "medium")

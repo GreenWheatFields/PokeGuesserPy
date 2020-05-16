@@ -24,33 +24,24 @@ def medium_mode(select, mode):
 
     while one < 2:  # might be unesscesary
         if len(select) == 0:
-            print("out of poke")
-            # do something
+            outOfPoke()
             break
         poke = PokeStats.Pokemon(select[0], mode)  # select[0]
         select.pop(0)
-        print(poke.name)
-        print(poke.idnum)
-        print("test")
+        poke.pokeStats(mode)
         guess = input("Guess a Pokemon\n")
         while 3 < 4:
             if guess.lower() == poke.name.lower():
                 tries += 1
                 winMessageAndNextMove(poke, select, mode)
-                print(next)
-
             elif "hint" == guess.lower() != poke.name.lower():
                 print(poke.desc)
                 total_shown += 1
-                tries += 1
                 guess = input("Guess a Pokemon\n")
             elif guess.lower() != poke.name.lower():
                 print("wrong")
                 tries += 1
                 guess = input("Guess a Pokemon\n")
-
-        one += 1
-        poke = None
 
 
 def hard_mode(select):
@@ -67,15 +58,21 @@ def winMessageAndNextMove(poke, select, mode):
     modes = {"easy": easy_mode,
              "medium": medium_mode,
              "hard": hard_mode}
-    print(poke.name + ". Correct! It took you " + str(tries) + " tries.\n Get another Pokemon: Y\n Quit: N "
-                                                               "\nReset Game from the beginning: R")
-    response = input("Y/N \n")
-    if response == "Y":
+    print("Correct! It took you " + str(tries) + " tries.\n Get another Pokemon: Y\n Quit: N "
+                                                 "\nReset Game from the beginning: R")
+    response = input()
+    if response.lower() == "y":
         modes[mode](select, mode)
-    elif response == "N":
+    elif response.lower() == "n":
         print("Thank you for playing.")
         sys.exit()
-    elif response == "R":
-        #reset game
+    elif response.lower() == "r":
+        # reset game
         pass
     print("outside loop")
+
+
+def outOfPoke():
+    print("Out of pokemon, to select a new generation")
+    # GameSetup.runPokeGuesser()
+    #reset

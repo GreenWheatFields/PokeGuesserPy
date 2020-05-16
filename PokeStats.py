@@ -1,6 +1,8 @@
 import requests as r
 import json
 import lxml
+from PIL import Image
+from io import BytesIO
 import textwrap
 from bs4 import BeautifulSoup
 
@@ -14,7 +16,7 @@ class Pokemon:
         self.heightInFeet = int(self.stats["height"] / 3.048)  # decimeteres
         self.weightInLbs = int(self.stats["weight"] / 4.536)  #
         self.baseExp = self.stats["base_experience"]
-        self.type1, self.is2Types, self.type2 = Pokemon.getTypes(self)
+        self.types = Pokemon.getTypes(self)
         self.firstGens = Pokemon.getFirstGens(self)
         self.frontSprite = self.stats["sprites"]["front_default"]
         '''parse bulbapedia'''
@@ -23,20 +25,18 @@ class Pokemon:
         bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
         self.desc = Pokemon.getDesc(self, bulbapedia, mode)
         self.detailedSprite = Pokemon.getDetailedSprite(self, bulbapedia)
+        #for testing
+        print(self.idnum)
 
     def printStats(self):
         pass
 
     def getTypes(self):
-        self.type1 = self.stats["types"][0]["type"]["name"]
+        self.types = self.stats["types"][0]["type"]["name"].capitalize()
         if len(self.stats["types"]) > 1:
-            self.is2Types = True
-            self.type2 = self.stats["types"][1]["type"]["name"]
-        else:
-            self.is2Types = False
-            self.type2 = None
+            self.types += " and " +  self.stats["types"][1]["type"]["name"].capitalize()
 
-        return self.type1, self.is2Types, self.type2
+        return self.types
 
     def getFirstGens(self):
         genSelect = len(self.stats["game_indices"])  # gen the last gen listed, which is the first appearance
@@ -96,7 +96,15 @@ class Pokemon:
 
     def getDetailedSprite(self, bulbapdeia):
         # find all elements with img tag and width=250, the first index of that list is what
-        # i want, extract the link with "src" and splice the first two characters "//" to get a link
-        self.detailedSprite = bulbapdeia.find_all("img", width="250")[0]["src"][2:]
+        # i want, extract the link with "src"
+        self.detailedSprite = "https:" + bulbapdeia.find_all("img", width="250")[0]["src"]
+
         return self.detailedSprite
 
+    def pokeStats(self, mode):
+        print("Type: " + self.types)
+        print("Height: " + str(self.heightInFeet) + " ft")
+        print("Weight: " + str(self.weightInLbs) + " lbs")
+        image = r.get(self.detailedSprite)
+        img = Image.open(BytesIO(image.content))
+        img.show()
