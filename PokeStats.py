@@ -11,6 +11,7 @@ class Pokemon:
 
     def __init__(self, randomPoke, mode):
         self.idnum = randomPoke
+
         self.stats = json.loads(r.get("https://pokeapi.co/api/v2/pokemon/" + str(self.idnum)).text)
         self.name = self.stats["name"].capitalize()
         self.heightInFeet = int(self.stats["height"] / 3.048)  # decimeteres
@@ -22,9 +23,9 @@ class Pokemon:
         '''parse bulbapedia'''
         # check name for exceptions
         self.name, self.parseKey, self.urlName = Pokemon.checkName(self)
-        bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
-        self.desc = Pokemon.getDesc(self, bulbapedia, mode)
-        self.detailedSprite = Pokemon.getDetailedSprite(self, bulbapedia)
+        self.bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
+        self.desc = Pokemon.getDesc(self, mode)
+        self.detailedSprite = Pokemon.getDetailedSprite(self)
         #for testing
         print(self.idnum)
 
@@ -78,13 +79,13 @@ class Pokemon:
 
         return self.name, self.parseKey, self.urlName
 
-    def getDesc(self, bulbapedia, mode):
+    def getDesc(self, mode):
         lengths = {"easy": 7, "medium": 6, "hard": 3}
         parseText = 3
         self.desc = ""
         while parseText <= lengths.get(mode):
             try:
-                self.desc += bulbapedia.select_one("#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
+                self.desc += self.bulbapedia.select_one("#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
             except AttributeError:
                 pass
             parseText += 1
@@ -94,10 +95,10 @@ class Pokemon:
         self.desc = (self.desc[:350] + '...') if len(self.desc) > 350 else self.desc
         return self.desc
 
-    def getDetailedSprite(self, bulbapdeia):
+    def getDetailedSprite(self):
         # find all elements with img tag and width=250, the first index of that list is what
         # i want, extract the link with "src"
-        self.detailedSprite = "https:" + bulbapdeia.find_all("img", width="250")[0]["src"]
+        self.detailedSprite = "https:" + self.bulbapedia.find_all("img", width="250")[0]["src"]
 
         return self.detailedSprite
 
