@@ -7,6 +7,9 @@ import textwrap
 from bs4 import BeautifulSoup
 from decimal import *
 
+# for testing
+picture = None
+
 
 class Pokemon:
 
@@ -30,10 +33,6 @@ class Pokemon:
         self.detailedSprite = Pokemon.getDetailedSprite(self)
 
         ### for tests
-        self.picture = None
-
-    def printStats(self):
-        pass
 
     def getTypes(self):
         self.types = self.stats["types"][0]["type"]["name"].capitalize()
@@ -77,13 +76,15 @@ class Pokemon:
             self.name = self.name.replace("-", " ")
             self.name = self.parseKey = self.name[:5].capitalize() + self.name[5:].capitalize()
             self.urlName = self.name.replace(" ", "_")
+        elif self.name == "Wishiwashi-solo":
+            self.name = self.parseKey = self.urlName = "Wishiwashi"
         else:
             self.parseKey = self.urlName = self.name
 
         return self.name, self.parseKey, self.urlName
 
     def getDesc(self, mode):
-        lengths = {"easy": 7, "medium": 6, "hard": 6}
+        lengths = {"easy": 18, "medium": 6, "hard": 6}
         parseText = 3
         self.desc = ""
         while parseText <= lengths.get(mode):
@@ -102,32 +103,30 @@ class Pokemon:
     def getDetailedSprite(self):
         # find all elements with img tag and width=250, the first index of that list is what
         # i want, extract the link with "src"
-        return "https:" + self.bulbapedia.find_all("img", width="250")[0]["src"]
+        return "http:" + self.bulbapedia.find_all("img", width="250")[0]["src"]
 
     def getHeightAndWeight(self):
         return round(float(self.stats["height"]) / float(3.048)), round(float(self.stats["weight"]) / float(4.536), 2)
 
     def message(self, mode):
-        message = "ID: {}\nHeight: {} ft\nWeight: {} lbs\nFirst Letter: {}\nBase Exp: {}\n".format(self.idnum,
+        message = "ID: {}\nHeight: {} ft\nWeight: {} lbs\nBase Exp: {}\n".format(self.idnum,
                                                                                                    self.heightInFeet,
                                                                                                    self.weightInLbs,
-                                                                                                   self.name[0],
                                                                                                    self.baseExp)
         if mode == "medium" or "easy":
-            message += "Type: {}\nFirst Gens: {}\n Description:\n '{}'".format(self.types, self.firstGens, self.desc)
+            message += "Type: {}\nFirst Gens: {}\n\nFirst Letter: {}\n Description:\n '{}'".format(self.types, self.firstGens, self.name[0], self.desc)
 
         print(message)
-        Pokemon.showImage(self, mode)
 
     def showImage(self, mode):
-        self.picture = None
+        global picture
         print(mode)
         if mode == "easy":
-            self.picture = self.detailedSprite
+            picture = self.detailedSprite
             print("in easy mode")
         elif mode == "medium" or "hard":
-            self.picture = self.frontSprite
+            picture = self.frontSprite
 
-        image = r.get(self.picture)
+        image = r.get(picture)
         img = Image.open(BytesIO(image.content))
         img.show()

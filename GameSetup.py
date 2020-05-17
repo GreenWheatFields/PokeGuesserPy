@@ -3,6 +3,8 @@ import PokeStats
 import random
 from random import shuffle
 
+gen_select = None
+
 
 def runPokeGuesser():
     gen_selector()
@@ -10,7 +12,7 @@ def runPokeGuesser():
 
 
 def gen_selector():
-    global select #might be unesseasry
+    global select, gen_select  # might be unesseasry
     gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
     while 1 < 2:
         if gen_select.lower() == "gen 1":
@@ -67,7 +69,7 @@ def mode_select(select):
             GameModes.easy_mode(select, mode)
             break
         elif mode.lower() == "medium":
-            GameModes.medium_mode(select, mode)
+            GameModes.main_mode(select, mode)
             # print("placeholder")
             break
         elif mode.lower() == "hard":
@@ -81,5 +83,5 @@ def mode_select(select):
 # runPokeGuesser()
 a = list(range(1, 807))
 shuffle(a)
-
-GameModes.medium_mode(a, "medium")
+a[0] = 746
+GameModes.main_mode(a, "hard")

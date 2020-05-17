@@ -1,5 +1,6 @@
 import unittest
 from PokeStats import Pokemon
+import PokeStats
 from bs4 import BeautifulSoup
 import time
 
@@ -19,11 +20,21 @@ class MyTestCase(unittest.TestCase):
             self.count += 1
             self.assertGreater(len(poke.bulbapedia.find_all("img", width="250")), 0)
 
-    def test_SpriteDisplay(self):
-        poke = Pokemon(151, "easy")
-        constant = poke.detailedSprite
+    def voidtest_SpriteDisplay(self):
+        poke = Pokemon(2, "easy")
+        detailedSprite = poke.detailedSprite
+        frontSprite = poke.frontSprite
         poke.showImage("easy")
-        self.assertEqual(poke.picture, constant)
+        self.assertEqual(PokeStats.picture, detailedSprite)
+        poke.showImage("medium")
+        self.assertEqual(PokeStats.picture, frontSprite)
+
+    def test_id746(self):
+        try:
+            poke = Pokemon(746, "medium")
+        except IndexError:
+            self.fail("Error raised")
+
 
 
 if __name__ == '__main__':
