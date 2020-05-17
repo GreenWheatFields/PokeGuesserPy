@@ -1,1 +1,13 @@
 results after a game should be saved in a dictionary.
+-------------
+       name
+       height
+       weight
+       baseexp
+       types
+       firstgens
+       frontspirte
+       detailedsprite
+       name
+       first Leter
+       desctripyion

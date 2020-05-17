@@ -5,17 +5,16 @@ from PIL import Image
 from io import BytesIO
 import textwrap
 from bs4 import BeautifulSoup
+from decimal import *
 
 
 class Pokemon:
 
     def __init__(self, randomPoke, mode):
         self.idnum = randomPoke
-
         self.stats = json.loads(r.get("https://pokeapi.co/api/v2/pokemon/" + str(self.idnum)).text)
         self.name = self.stats["name"].capitalize()
-        self.heightInFeet = int(self.stats["height"] / 3.048)  # decimeteres
-        self.weightInLbs = int(self.stats["weight"] / 4.536)  #
+        self.heightInFeet, self.weightInLbs = Pokemon.getHeightAndWeight(self)  # decimeteres / #hecograms
         self.baseExp = self.stats["base_experience"]
         self.types = Pokemon.getTypes(self)
         self.firstGens = Pokemon.getFirstGens(self)
@@ -26,8 +25,7 @@ class Pokemon:
         self.bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
         self.desc = Pokemon.getDesc(self, mode)
         self.detailedSprite = Pokemon.getDetailedSprite(self)
-        #for testing
-        print(self.idnum)
+
 
     def printStats(self):
         pass
@@ -98,14 +96,20 @@ class Pokemon:
     def getDetailedSprite(self):
         # find all elements with img tag and width=250, the first index of that list is what
         # i want, extract the link with "src"
-        self.detailedSprite = "https:" + self.bulbapedia.find_all("img", width="250")[0]["src"]
+        return "https:" + self.bulbapedia.find_all("img", width="250")[0]["src"]
 
-        return self.detailedSprite
+    def getHeightAndWeight(self):
+        getcontext().prec = 2
+        return Decimal(self.stats["height"]) /  Decimal(3.048) , Decimal(self.stats["weight"]) / Decimal(4.536)
 
     def pokeStats(self, mode):
-        print("Type: " + self.types)
-        print("Height: " + str(self.heightInFeet) + " ft")
-        print("Weight: " + str(self.weightInLbs) + " lbs")
-        image = r.get(self.detailedSprite)
-        img = Image.open(BytesIO(image.content))
-        img.show()
+        message = "ID: {}\nHeight: {} ft\nWeight: {} lbs\nFirst Letter: {}\n".format(self.idnum, self.heightInFeet, self.weightInLbs,self.name[0])
+        if mode == "medium":
+            # message = ("ID: {}" ).format(self.name)
+            print(message)
+        # image = r.get(self.detailedSprite)
+        # img = Image.open(BytesIO(image.content))
+        # img.show()
+
+    def showImage(self, mode):
+        pass
