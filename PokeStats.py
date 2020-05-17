@@ -12,6 +12,8 @@ class Pokemon:
 
     def __init__(self, randomPoke, mode):
         self.idnum = randomPoke
+        print(self.idnum)
+        # for testing
         self.stats = json.loads(r.get("https://pokeapi.co/api/v2/pokemon/" + str(self.idnum)).text)
         self.name = self.stats["name"].capitalize()
         self.heightInFeet, self.weightInLbs = Pokemon.getHeightAndWeight(self)  # decimeteres / #hecograms
@@ -22,10 +24,13 @@ class Pokemon:
         '''parse bulbapedia'''
         # check name for exceptions
         self.name, self.parseKey, self.urlName = Pokemon.checkName(self)
-        self.bulbapedia = BeautifulSoup(r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
+        self.bulbapedia = BeautifulSoup(
+            r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
         self.desc = Pokemon.getDesc(self, mode)
         self.detailedSprite = Pokemon.getDetailedSprite(self)
 
+        ### for tests
+        self.picture = None
 
     def printStats(self):
         pass
@@ -33,7 +38,7 @@ class Pokemon:
     def getTypes(self):
         self.types = self.stats["types"][0]["type"]["name"].capitalize()
         if len(self.stats["types"]) > 1:
-            self.types += " and " +  self.stats["types"][1]["type"]["name"].capitalize()
+            self.types += " and " + self.stats["types"][1]["type"]["name"].capitalize()
 
         return self.types
 
@@ -78,16 +83,17 @@ class Pokemon:
         return self.name, self.parseKey, self.urlName
 
     def getDesc(self, mode):
-        lengths = {"easy": 7, "medium": 6, "hard": 3}
+        lengths = {"easy": 7, "medium": 6, "hard": 6}
         parseText = 3
         self.desc = ""
         while parseText <= lengths.get(mode):
             try:
-                self.desc += self.bulbapedia.select_one("#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
+                self.desc += self.bulbapedia.select_one(
+                    "#mw-content-text > p:nth-child(" + str(parseText) + ")").text.replace(self.parseKey, "_____")
             except AttributeError:
                 pass
             parseText += 1
-        #print("final")
+        # print("final")
         wrapper = textwrap.TextWrapper(width=75)
         self.desc = wrapper.fill(text=self.desc)
         self.desc = (self.desc[:350] + '...') if len(self.desc) > 350 else self.desc
@@ -99,17 +105,29 @@ class Pokemon:
         return "https:" + self.bulbapedia.find_all("img", width="250")[0]["src"]
 
     def getHeightAndWeight(self):
-        getcontext().prec = 2
-        return Decimal(self.stats["height"]) /  Decimal(3.048) , Decimal(self.stats["weight"]) / Decimal(4.536)
+        return round(float(self.stats["height"]) / float(3.048)), round(float(self.stats["weight"]) / float(4.536), 2)
 
-    def pokeStats(self, mode):
-        message = "ID: {}\nHeight: {} ft\nWeight: {} lbs\nFirst Letter: {}\n".format(self.idnum, self.heightInFeet, self.weightInLbs,self.name[0])
-        if mode == "medium":
-            # message = ("ID: {}" ).format(self.name)
-            print(message)
-        # image = r.get(self.detailedSprite)
-        # img = Image.open(BytesIO(image.content))
-        # img.show()
+    def message(self, mode):
+        message = "ID: {}\nHeight: {} ft\nWeight: {} lbs\nFirst Letter: {}\nBase Exp: {}\n".format(self.idnum,
+                                                                                                   self.heightInFeet,
+                                                                                                   self.weightInLbs,
+                                                                                                   self.name[0],
+                                                                                                   self.baseExp)
+        if mode == "medium" or "easy":
+            message += "Type: {}\nFirst Gens: {}\n Description:\n '{}'".format(self.types, self.firstGens, self.desc)
+
+        print(message)
+        Pokemon.showImage(self, mode)
 
     def showImage(self, mode):
-        pass
+        self.picture = None
+        print(mode)
+        if mode == "easy":
+            self.picture = self.detailedSprite
+            print("in easy mode")
+        elif mode == "medium" or "hard":
+            self.picture = self.frontSprite
+
+        image = r.get(self.picture)
+        img = Image.open(BytesIO(image.content))
+        img.show()

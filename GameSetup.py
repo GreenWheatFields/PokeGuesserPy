@@ -81,4 +81,5 @@ def mode_select(select):
 # runPokeGuesser()
 a = list(range(1, 807))
 shuffle(a)
+
 GameModes.medium_mode(a, "medium")

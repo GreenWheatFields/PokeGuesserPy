@@ -19,6 +19,7 @@ def easy_mode(select, mode):
 
 def medium_mode(select, mode):
     global total_shown, one, tries
+    mode = "easy"
     one = 1
     three = 3
 
@@ -28,7 +29,7 @@ def medium_mode(select, mode):
             break
         poke = PokeStats.Pokemon(select[0], mode)  # select[0]
         select.pop(0)
-        poke.pokeStats(mode)
+        poke.message(mode)
         guess = input("Guess a Pokemon\n")
         while 3 < 4:
             if guess.lower() == poke.name.lower():

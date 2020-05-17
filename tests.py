@@ -10,7 +10,7 @@ class MyTestCase(unittest.TestCase):
         self.select = list(range(0, 808))
         self.count = 0
 
-    def test_checkImages(self):
+    def voidtest_checkImages(self):
         # checking to see if the links are empty
         for i in self.select:
             poke = Pokemon(self.select[0], "medium")
@@ -19,6 +19,11 @@ class MyTestCase(unittest.TestCase):
             self.count += 1
             self.assertGreater(len(poke.bulbapedia.find_all("img", width="250")), 0)
 
+    def test_SpriteDisplay(self):
+        poke = Pokemon(151, "easy")
+        constant = poke.detailedSprite
+        poke.showImage("easy")
+        self.assertEqual(poke.picture, constant)
 
 
 if __name__ == '__main__':
