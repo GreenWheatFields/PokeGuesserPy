@@ -8,7 +8,7 @@ gen_select = None
 
 def runPokeGuesser():
     gen_selector()
-    mode_select(select)
+    mode_select(select, gen_select)
 
 
 def gen_selector():
@@ -59,17 +59,17 @@ def gen_selector():
 
     print(gen_select.capitalize() + " Selected: ")
 
-    return select
+    return select, gen_select
 
 
-def mode_select(select):
+def mode_select(select, gen_select):
     while 1 < 2:
         mode = input("Now select a mode, easy medium, hard\n")
         if mode.lower() == "easy":
             GameModes.easy_mode(select, mode)
             break
         elif mode.lower() == "medium":
-            GameModes.main_mode(select, mode)
+            GameModes.main_mode(select, mode, gen_select)
             # print("placeholder")
             break
         elif mode.lower() == "hard":
@@ -80,8 +80,8 @@ def mode_select(select):
             print("incorrect")
 
 
-# runPokeGuesser()
-a = list(range(1, 807))
-shuffle(a)
-a[0] = 746
-GameModes.main_mode(a, "hard")
+runPokeGuesser()
+# a = list(range(1, 807))
+# shuffle(a)
+# a[0] = 1
+# GameModes.main_mode(a, "easy")

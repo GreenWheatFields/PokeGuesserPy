@@ -1,46 +1,49 @@
-
 import PokeStats
 import sys
 
+results = {}
+round = 0
 
-def main_mode(select, mode):
-    total_shown, one = 0, 1
+def main_mode(select, mode, gen_select):
+    global results, round
+    total_shown = 0
     tries = 0
-    one = 1
-    three = 3
 
-    while one < 2:  # might be unesscesary
-        if len(select) == 0:
-            outOfPoke()
-            break
-        poke = PokeStats.Pokemon(select[0], mode)  # select[0]
-        select.pop(0)
-        poke.message(mode)
-        if mode == "easy" or "medium": poke.showImage(mode)
-        guess = input("Guess a Pokemon\n")
-        while 3 < 4:
-            print("start of loop")
-            if guess.lower() == poke.name.lower():
-                tries += 1
-                winMessageAndNextMove(poke, select, mode, tries, total_shown)
-            elif "hint" == guess.lower() != poke.name.lower():
-                total_shown += 1
-                hints(total_shown, mode, poke)
-                print(total_shown)
-                guess = input("Guess a Pokemon\n")
-            elif guess.lower() != poke.name.lower():
-                print("wrong")
-                tries += 1
-                guess = input("Guess a Pokemon\n")
+    if len(select) == 0:
+        outOfPoke()
+
+    # select[0] = 1
+    poke = PokeStats.Pokemon(select[0], mode)  # select[0]
+    select.pop(0)
+    poke.message(mode)
+    # if mode == "easy" or "medium": poke.showImage(mode)
+    guess = input("Guess a Pokemon\n")
+
+    while 3 < 4:
+
+        print("start of loop")
+        if guess.lower() == poke.name.lower():
+            tries += 1
+            round += 1
+            logRound(poke, mode, tries, total_shown, gen_select, results, round)
+            winMessageAndNextMove(poke, select, mode, tries, total_shown, gen_select)
+        elif "hint" == guess.lower() != poke.name.lower():
+            total_shown += 1
+            hints(total_shown, mode, poke)
+            print(total_shown)
+            guess = input("Guess a Pokemon\n")
+        elif guess.lower() != poke.name.lower():
+            print("wrong")
+            tries += 1
+            guess = input("Guess a Pokemon\n")
 
 
-def winMessageAndNextMove(poke, select, mode, tries, total_shown):
-    logRound(poke, mode, tries, total_shown)
+def winMessageAndNextMove(poke, select, mode, tries, total_shown, gen_select):
     print("Correct! It took you " + str(tries) + " tries.\n Get another Pokemon: Y\n Quit: N "
                                                  "\nReset Game from the beginning: R")
     response = input()
     if response.lower() == "y":
-        main_mode(select, mode)
+        main_mode(select, mode, gen_select)
     elif response.lower() == "n":
         print("Thank you for playing.")
         sys.exit()
@@ -82,7 +85,12 @@ def hints(total_shown, mode, poke):
         print("Out of hints")
 
 
-def logRound(poke,mode, tries, total_shown):
+def logRound(poke, mode, tries, total_shown, gen_select, results, roundNum):
+    print("inside log round")
+
     # add stats to a dictionary
-    # print(GameSetup.gen_select)
-    pass
+    round = "Round " + str(roundNum)
+    print(round)
+    results.update({round: {"Pokemon ": poke.name, "mode ": mode, "tries ": tries}})
+    print(results)
+    return results

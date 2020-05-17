@@ -29,10 +29,10 @@ class MyTestCase(unittest.TestCase):
         poke.showImage("medium")
         self.assertEqual(PokeStats.picture, frontSprite)
 
-    def test_id746(self):
+    def test_names(self):
         try:
             poke = Pokemon(746, "medium")
-        except IndexError:
+        except Exception:
             self.fail("Error raised")
 
 

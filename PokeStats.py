@@ -1,11 +1,10 @@
-import requests as r
 import json
-import lxml
-from PIL import Image
-from io import BytesIO
 import textwrap
+from io import BytesIO
+
+import requests as r
+from PIL import Image
 from bs4 import BeautifulSoup
-from decimal import *
 
 # for testing
 picture = None
