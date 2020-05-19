@@ -80,7 +80,7 @@ def mode_select(select, gen_select):
             print("incorrect")
 
 
-runPokeGuesser()
+#runPokeGuesser()
 # a = list(range(1, 807))
 # shuffle(a)
 # a[0] = 1
