@@ -4,6 +4,7 @@ import sys
 results = {}
 round = 0
 
+
 def main_mode(select, mode, gen_select):
     global results, round
     total_shown = 0
