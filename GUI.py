@@ -1,26 +1,27 @@
 # values=sg.theme_list(), size=(90, 12), key='-LIST-', enable_events=True)],
 import PySimpleGUI as sg
-import PokeStats
 
+import GameSetup
 
 class mainWindow():
     def __init__(self):
         self.imLocation = r"res\\16627.png"
         self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(300, 300))
-        self.message = "AAAAAAAAAAAAAAAAAAAAAA"
+        self.message = ""
         self.input = sg.InputText(key='-IN-', size=(90, 12), do_not_clear=False)
+        self.prompt = sg.Text('Response')
+        self.introMessage = sg.Text(self.message, size=(15, 15))
 
-        self.layout = [[self.imageElem, sg.Text(self.message, size=(15, 15), key='-OUTPUT0-')],
-                  [sg.Text('Your typed chars appear here:'), sg.Text(size=(15, 1), key='-OUTPUT-')],
-                  [self.input],
-                  [sg.Button('Show', bind_return_key=True), sg.Button('Exit')],
-                  ]
+        self.layout = [[self.imageElem, self.introMessage],
+                       [self.prompt, sg.Text(size=(15, 1), key='-OUTPUT-')],
+                       [self.input],
+                       [sg.Button('Show', bind_return_key=True), sg.Button('Exit')],
+                       ]
         self.window = sg.Window('PokeGuesser', self.layout)
-
-        sg.theme('BluePurple')
 
     def eventLoop(self):
         while True:
+
             event, values = self.window.read()
             print(event, values)
             if event in (None, 'Exit'):
@@ -34,5 +35,5 @@ class mainWindow():
                 self.imageElem.Update(filename=x, size=(300, 300))
                 print(event)
 
-
-mainWindow().eventLoop()
+    def updateMessage(self, message):
+        self.introMessage.Update(message)
