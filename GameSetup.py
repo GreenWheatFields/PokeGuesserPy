@@ -5,8 +5,6 @@ from random import shuffle
 import PySimpleGUI as sg
 
 
-
-
 class setup():
     def __init__(self):
         # intialize GUI
@@ -24,7 +22,7 @@ class setup():
                        ]
         self.window = sg.Window('PokeGuesser', self.layout)
 
-        gen_select = None
+
         self.runPokeGuesser()
 
     def build(self):
@@ -38,8 +36,13 @@ class setup():
                 sys.exit()
             if self.event == 'Show':
                 # Update the "output" text element to be the value of "input" element
-                if self.gen_selector() == False:
-                    self.gen_selector()
+                select, gen_select = self.gen_selector()
+                if select and gen_select == False:
+                    select, gen_select = self.gen_selector()
+
+                print(select)
+                print(gen_select)
+                #self.mode_select(self.select, self.gen_select)
 
                 # self.input.update("")
                 # self.window['-OUTPUT-'].update(values["-IN-"])
@@ -50,13 +53,12 @@ class setup():
     def runPokeGuesser(self):
         self.build()
         self.gen_selector()
-        self.mode_select(select, gen_select)
 
     def gen_selector(self):
-        global select, gen_select  # might be unesseasry
+        # should describe max generations and all
         gen_select = self.values['-IN-']
         print(gen_select)
-        #gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
+        # gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
         while 1 < 2:
             if gen_select.lower() == "gen 1":
                 upper_bind = 151
@@ -92,35 +94,29 @@ class setup():
                 break
             else:
                 self.introMessage.Update("Incorrect entry detected")
-                return False
+                return False, False
 
-        select = []
+        self.select = [int]
 
         for i in range(lower_bind, upper_bind + 1):
-            select.append(i)
+            self.select.append(i)
 
-        shuffle(select)
+        shuffle(self.select)
 
-        print(gen_select.capitalize() + " Selected: ")
+        self.introMessage.Update(gen_select.capitalize() + " Selected: ")
 
-        return select, gen_select,
+        return self.select, gen_select,  # probably redundant
 
     def mode_select(self, select, gen_select):
         while 1 < 2:
-            mode = input("Now select a mode, easy medium, hard\n")
-            if mode.lower() == "easy":
-                GameModes.easy_mode(select, mode)
-                break
-            elif mode.lower() == "medium":
-                GameModes.main_mode(select, mode, gen_select)
-                # print("placeholder")
-                break
-            elif mode.lower() == "hard":
-                # GameModes.hard_mode(select)
-                print("placeholder")
-                break
+            self.introMessage.Update("Now select a mode, easy medium, hard\n")
+            # describe modes here
+            mode = self.values['-IN-']
+            print(mode)
+            if mode.lower() == "easy" or "medium" or "hard":
+                GameModes.main_mode(self.select, mode, self.gen_select)
             else:
-                print("incorrect")
+                self.introMessage.Update("invalid entry detected")
 
 
 # runPokeGuesser()

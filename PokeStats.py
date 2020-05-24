@@ -18,18 +18,18 @@ class Pokemon:
         # for testing
         self.stats = json.loads(r.get("https://pokeapi.co/api/v2/pokemon/" + str(self.idnum)).text)
         self.name = self.stats["name"].capitalize()
-        self.heightInFeet, self.weightInLbs = self.getHeightAndWeight(self)  # decimeteres / #hecograms
+        self.heightInFeet, self.weightInLbs = self.getHeightAndWeight()  # decimeteres / #hecograms
         self.baseExp = self.stats["base_experience"]
-        self.types = self.getTypes(self)
-        self.firstGens = self.getFirstGens(self)
+        self.types = self.getTypes()
+        self.firstGens = self.getFirstGens()
         self.frontSprite = self.stats["sprites"]["front_default"]
         '''parse bulbapedia'''
         # check name for exceptions
         self.name, self.parseKey, self.urlName = Pokemon.checkName(self)
         self.bulbapedia = BeautifulSoup(
             r.get("https://bulbapedia.bulbagarden.net/wiki/" + self.urlName + "_(Pokémon)").text, features="lxml")
-        self.desc = self.getDesc(self, mode)
-        self.detailedSprite = self.getDetailedSprite(self)
+        self.desc = self.getDesc(mode)
+        self.detailedSprite = self.getDetailedSprite()
 
         ### for tests
 
