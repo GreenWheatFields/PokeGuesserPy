@@ -1,12 +1,14 @@
-import GameModes
-import GUI
+
 import sys
 from random import shuffle
 import PySimpleGUI as sg
 
+import GameModes
+
 
 class setup():
     def __init__(self):
+
         # intialize GUI
         self.imLocation = r"res\\16627.png"
         self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(300, 300))
@@ -22,10 +24,12 @@ class setup():
                        ]
         self.window = sg.Window('PokeGuesser', self.layout)
 
-        self.canContinue = True
-        self.runPokeGuesser()
+        self.selectedGen = self.selectedMode = False
+        self.sameLoop = True
+
 
     def build(self):
+        global select, gen_select, mode
         while True:
 
             self.event, self.values = self.window.read()
@@ -35,21 +39,22 @@ class setup():
                 self.window.close()
                 sys.exit()
             if self.event == 'Show':
-                select, gen_select = self.gen_selector(self.values['-IN-'])
-                if self.canContinue:
-                    self.mode_select(select, gen_select)
+                if not self.selectedGen:
+                    select, gen_select = self.gen_selector(self.values['-IN-'])
+                elif self.selectedGen and not self.selectedMode:
+                    self.selectedMode, mode = self.mode_select(select, gen_select, str(self.values['-IN-']))
+                elif self.selectedGen and self.selectedMode:
+                    x = GameModes.mainMode(select, mode, gen_select)
+
                 else:
-                    pass
+                    print("here2")
 
-                # self.mode_select(select, gen_select)
-
-                # self.input.update("")
-                # self.window['-OUTPUT-'].update(values["-IN-"])
                 # x = r"res\\thumb-1920-574726.png"
                 # self.imageElem.Update(filename=x, size=(300, 300))
 
     def runPokeGuesser(self):
         self.build()
+        # redudant
 
     def gen_selector(self, response):
         # should describe max generations and all
@@ -102,21 +107,25 @@ class setup():
 
         shuffle(select)
 
-        self.introMessage.Update(gen_select.capitalize() + " Selected: ")
-        self.canContinue = True
+        self.updateWindow(gen_select.capitalize() + " Selected:\n Now select a Mode. easy, medium, or hard")
+        self.introMessage.Update(gen_select.capitalize() + " Selected:\n Now select a Mode. easy, medium, or hard")
+        self.canContinue = self.selectedGen = True
+
         return select, gen_select,  # probably redundant
 
-    def mode_select(self, select, gen_select):
-        while 1 < 2:
-            self.introMessage.Update("Now select a mode, easy medium, hard\n")
-            # describe modes here
-            mode = self.values['-IN-']
-            print(mode)
-            if mode.lower() == "easy" or "medium" or "hard":
-                GameModes.main_mode(select, mode, gen_select)
-            else:
-                self.introMessage.Update("invalid entry detected")
-                return False
+    def mode_select(self, select, gen_select, mode : str):
+
+        if mode.lower() == "easy" or "medium" or "hard":
+            self.updateWindow("{} mode seclect".format(mode.capitalize()))
+            print()
+            return True, mode.lower()
+        else:
+            self.updateWindow("Invalid mode: ")
+            return False, mode
+
+    def updateWindow(self, message):
+        # i have no idea why this needs to be it's own function but it works
+        self.introMessage.Update(message)
 
 
 # runPokeGuesser()
@@ -125,4 +134,4 @@ class setup():
 # a[0] = 1
 # GameModes.main_mode(a, "easy")
 if __name__ == "__main__":
-    setup()
+    setup().runPokeGuesser()

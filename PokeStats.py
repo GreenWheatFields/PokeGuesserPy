@@ -77,6 +77,9 @@ class Pokemon:
             self.urlName = self.name.replace(" ", "_")
         elif self.name == "Wishiwashi-solo":
             self.name = self.parseKey = self.urlName = "Wishiwashi"
+        elif self.name == "porygon-z":
+            self.parseKey = self.urlName = "Porygon-Z"
+            self.name = "Porygon Z"
         else:
             self.parseKey = self.urlName = self.name
 
@@ -115,7 +118,7 @@ class Pokemon:
         if mode == "medium" or "easy":
             message += "Type: {}\nFirst Gens: {}\n\nFirst Letter: {}\n Description:\n '{}'".format(self.types, self.firstGens, self.name[0], self.desc)
 
-        print(message)
+        return message
 
     def showImage(self, mode):
         global picture
