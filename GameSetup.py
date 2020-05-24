@@ -1,25 +1,62 @@
 import GameModes
 import GUI
+import sys
 from random import shuffle
+import PySimpleGUI as sg
 
 
-class setup(GUI.mainWindow):
+
+
+class setup():
     def __init__(self):
-        super().__init__()
+        # intialize GUI
+        self.imLocation = r"res\\16627.png"
+        self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(300, 300))
+        self.message = "Welcome message. Select generation, gen 1 -7 or All\n"
+        self.input = sg.InputText(key='-IN-', size=(90, 12), do_not_clear=False)
+        self.prompt = sg.Text('Response')
+        self.introMessage = sg.Text(self.message, size=(15, 15))
+
+        self.layout = [[self.imageElem, self.introMessage],
+                       [self.prompt, sg.Text(size=(15, 1), key='-OUTPUT-')],
+                       [self.input],
+                       [sg.Button('Show', bind_return_key=True), sg.Button('Exit')],
+                       ]
+        self.window = sg.Window('PokeGuesser', self.layout)
+
         gen_select = None
         self.runPokeGuesser()
 
+    def build(self):
+        while True:
+
+            self.event, self.values = self.window.read()
+            print(self.event, self.values)
+            # self.gen_selector()
+            if self.event in (None, 'Exit'):
+                self.window.close()
+                sys.exit()
+            if self.event == 'Show':
+                # Update the "output" text element to be the value of "input" element
+                if self.gen_selector() == False:
+                    self.gen_selector()
+
+                # self.input.update("")
+                # self.window['-OUTPUT-'].update(values["-IN-"])
+                # x = r"res\\thumb-1920-574726.png"
+                # self.imageElem.Update(filename=x, size=(300, 300))
+                print(self.event)
+
     def runPokeGuesser(self):
-        self.eventLoop()
+        self.build()
         self.gen_selector()
         self.mode_select(select, gen_select)
 
-
-
     def gen_selector(self):
         global select, gen_select  # might be unesseasry
-        self.updateMessage("Welcome message. Select generation, gen 1 -7 or All\n")
-        gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
+        gen_select = self.values['-IN-']
+        print(gen_select)
+        #gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
         while 1 < 2:
             if gen_select.lower() == "gen 1":
                 upper_bind = 151
@@ -54,7 +91,8 @@ class setup(GUI.mainWindow):
                 lower_bind = 1
                 break
             else:
-                gen_select = input("Unrecognized input:\n")
+                self.introMessage.Update("Incorrect entry detected")
+                return False
 
         select = []
 
@@ -65,7 +103,7 @@ class setup(GUI.mainWindow):
 
         print(gen_select.capitalize() + " Selected: ")
 
-        return select, gen_select
+        return select, gen_select,
 
     def mode_select(self, select, gen_select):
         while 1 < 2:

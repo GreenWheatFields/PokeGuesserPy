@@ -1,7 +1,6 @@
 # values=sg.theme_list(), size=(90, 12), key='-LIST-', enable_events=True)],
 import PySimpleGUI as sg
 
-import GameSetup
 
 class mainWindow():
     def __init__(self):
