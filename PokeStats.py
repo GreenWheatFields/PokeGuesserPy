@@ -1,8 +1,8 @@
 import json
 import textwrap
 from io import BytesIO
-
 import requests as r
+import base64
 from PIL import Image
 from bs4 import BeautifulSoup
 
@@ -132,4 +132,12 @@ class Pokemon:
 
         image = r.get(picture)
         img = Image.open(BytesIO(image.content))
-        img.show()
+
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        return  base64.b64encode(buffered.getvalue())
+
+if __name__ == '__main__':
+    # for testing
+    poke = Pokemon(2, "medium")
+    poke.showImage("medium")

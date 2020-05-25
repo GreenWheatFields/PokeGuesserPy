@@ -10,6 +10,7 @@ class MyTestCase(unittest.TestCase):
     def setUp(self):
         self.select = list(range(0, 808))
         self.count = 0
+        self.poke = Pokemon(5, "medium")
 
     def voidtest_checkImages(self):
         # checking to see if the links are empty
@@ -29,12 +30,15 @@ class MyTestCase(unittest.TestCase):
         poke.showImage("medium")
         self.assertEqual(PokeStats.picture, frontSprite)
 
-    def test_names(self):
+    def voidtest_names(self):
         try:
             poke = Pokemon(746, "medium")
         except Exception:
             self.fail("Error raised")
 
+    def testCheckImageType(self):
+        self.assertTrue(self.poke.getDetailedSprite().endswith(".png"))
+        self.assertTrue(self.poke.frontSprite.endswith(".png"))
 
 
 if __name__ == '__main__':

@@ -5,16 +5,14 @@ import PySimpleGUI as sg
 import time
 
 
-
-
 class mainMode():
     def __init__(self, select, mode, gen_select):
         # intialize GUI
         self.imLocation = r"res\\16627.png"
-        self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(300, 300))
+        self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(150, 150))
         self.message = "PRESS ENTER TWICE TO LOAD POKEMON\n"
         self.input = sg.InputText(key='-IN-', size=(90, 12), do_not_clear=False)
-        self.prompt = sg.Text('Response', size= (20, 1))
+        self.prompt = sg.Text('Response', size=(20, 1))
         self.introMessage = sg.Text(self.message, size=(45, 30), key='message')
 
         self.layout = [[self.imageElem, self.introMessage],
@@ -24,13 +22,13 @@ class mainMode():
                        ]
         self.window = sg.Window('PokeGuesser', self.layout)
 
-
         self.window.read()
 
         self.results = {}
         self.round = 0
 
         self.hasLoadedPokemon = False
+        self.newRound = False
 
         # could most likely be replaced by self, but whatever
         self.main_mode(select, mode, gen_select)
@@ -59,7 +57,7 @@ class mainMode():
             self.event, self.values = self.window.read()
 
             print(self.event, self.values)
-
+            print(poke.name)
             if self.event in (None, 'Exit'):
                 self.window.close()
                 sys.exit()
@@ -67,8 +65,9 @@ class mainMode():
                 print(self.values)
                 if not self.hasLoadedPokemon:
                     self.updateWindow2(poke.message(mode))
+                    self.imageElem.Update(data=poke.showImage(mode), size=(300, 300))
                     self.hasLoadedPokemon = True
-                elif self.hasLoadedPokemon:
+                elif self.hasLoadedPokemon and not self.newRound:
                     guess = self.values['-IN-']
 
                     while 3 < 4:
@@ -77,8 +76,11 @@ class mainMode():
                         if guess.lower() == poke.name.lower():
                             tries += 1
                             self.round += 1
-                            self.logRound(poke, mode, tries, total_shown, gen_select, self.results, self.round)
+                            self.logRound(poke, mode, tries, total_shown, gen_select, self.round)
+                            print("outside log rounf")
                             self.winMessageAndNextMove(poke, select, mode, tries, total_shown, gen_select)
+                            self.newRound = True
+                            break
                         elif "hint" == guess.lower() != poke.name.lower():
                             total_shown += 1
                             self.updateWindow2(self.hints(total_shown, mode, poke), append=True)
@@ -88,22 +90,24 @@ class mainMode():
                             tries += 1
                             self.prompt.Update("Incorrect. Tries: {}".format(tries))
                             break
-
-
+                elif self.hasLoadedPokemon and self.newRound:
+                    self.winMessageAndNextMove(poke, select, mode, tries, total_shown, gen_select)
 
     def winMessageAndNextMove(self, poke, select, mode, tries, total_shown, gen_select):
-        print("Correct! It took you " + str(tries) + " tries.\n Get another Pokemon: Y\n Quit: N "
-                                                     "\nReset Game from the beginning: R")
-        response = input()
-        if response.lower() == "y":
+        self.updateWindow2("Correct! It took you " + str(tries) + " tries.\n Get another Pokemon: Y\n Quit: N "
+                                                                  "\nReset Game from the beginning: R")
+        response = self.values['-IN-']
+
+        if str(response).lower() == "y":
+            self.hasLoadedPokemon = self.newRound = False
             self.main_mode(select, mode, gen_select)
         elif response.lower() == "n":
             print("Thank you for playing.")
             sys.exit()
         elif response.lower() == "r":
             # reset game
-            pass
-        print("outside loop")
+            GameSetup.setup()
+
 
     def outOfPoke(self):
         print("Out of pokemon, to select a new generation")
@@ -135,15 +139,14 @@ class mainMode():
         elif mode == "hard" and total_shown > 3:
             return "Out of hints"
 
-    def logRound(self, poke, mode, tries, total_shown, gen_select, results, roundNum):
+    def logRound(self, poke, mode, tries, total_shown, gen_select, roundNum):
         print("inside log round")
 
         # add stats to a dictionary
         round = "Round " + str(roundNum)
         print(round)
-        results.update({round: {"Pokemon ": poke.name, "mode ": mode, "tries ": tries}})
-        print(results)
-        return results
+        self.results.update({round: {"Pokemon ": poke.name, "mode ": mode, "tries ": tries}})
+        print(self.results)
 
     def updateWindow2(self, message, append=False):
         if not append:
@@ -151,6 +154,8 @@ class mainMode():
         elif append:
             self.introMessage.Update("{}\n{}".format(self.introMessage.Get(), message))
 
+
 if __name__ == '__main__':
-    select =[45,678,4,5,23]
+    # for testing
+    select = [1, 2, 3, 4, 5 ,6 ,7 ,8 ,9]
     mainMode(select, "easy", "gen 1")
