@@ -1,20 +1,42 @@
 import PokeStats
 import sys
 import GameSetup
+import PySimpleGUI as sg
+import time
 
-results = {}
-round = 0
 
 
-class mainMode(GameSetup.setup):
+
+class mainMode():
     def __init__(self, select, mode, gen_select):
-        super().__init__()
+        # intialize GUI
+        self.imLocation = r"res\\16627.png"
+        self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(300, 300))
+        self.message = "PRESS ENTER TWICE TO LOAD POKEMON\n"
+        self.input = sg.InputText(key='-IN-', size=(90, 12), do_not_clear=False)
+        self.prompt = sg.Text('Response', size= (20, 1))
+        self.introMessage = sg.Text(self.message, size=(45, 30), key='message')
+
+        self.layout = [[self.imageElem, self.introMessage],
+                       [self.prompt, sg.Text(size=(15, 1), key='-OUTPUT-')],
+                       [self.input],
+                       [sg.Button('Show', bind_return_key=True), sg.Button('Exit')],
+                       ]
+        self.window = sg.Window('PokeGuesser', self.layout)
+
+
+        self.window.read()
+
+        self.results = {}
+        self.round = 0
+
+        self.hasLoadedPokemon = False
+
         # could most likely be replaced by self, but whatever
-        self.event, self.values = self.window.read()
         self.main_mode(select, mode, gen_select)
 
-
     def main_mode(self, select, mode, gen_select):
+
         print("INSIDE")
         total_shown = 0
         tries = 0
@@ -22,31 +44,52 @@ class mainMode(GameSetup.setup):
         if len(select) == 0:
             self.outOfPoke()
 
-        # select[0] = 1
-        poke = PokeStats.Pokemon(select[0], mode)  # select[0]
+        try:
+            poke = PokeStats.Pokemon(select[0], mode)
+        except IndexError:
+            print("index error. try again")
+            sys.exit()
+
         select.pop(0)
         poke.message(mode)
-        self.updateWindow("OLOLOLOLOLOLL")
+
         # if mode == "easy" or "medium": poke.showImage(mode)
-        guess = input("Guess a Pokemon\n")
+        while True:
 
-        while 3 < 4:
+            self.event, self.values = self.window.read()
 
-            print("start of loop")
-            if guess.lower() == poke.name.lower():
-                tries += 1
-                self.round += 1
-                self.logRound(poke, mode, tries, total_shown, gen_select, self.results, self.round)
-                self.winMessageAndNextMove(poke, select, mode, tries, total_shown, gen_select)
-            elif "hint" == guess.lower() != poke.name.lower():
-                total_shown += 1
-                self.hints(total_shown, mode, poke)
-                print(total_shown)
-                guess = input("Guess a Pokemon\n")
-            elif guess.lower() != poke.name.lower():
-                print("wrong")
-                tries += 1
-                guess = input("Guess a Pokemon\n")
+            print(self.event, self.values)
+
+            if self.event in (None, 'Exit'):
+                self.window.close()
+                sys.exit()
+            if self.event == 'Show':
+                print(self.values)
+                if not self.hasLoadedPokemon:
+                    self.updateWindow2(poke.message(mode))
+                    self.hasLoadedPokemon = True
+                elif self.hasLoadedPokemon:
+                    guess = self.values['-IN-']
+
+                    while 3 < 4:
+
+                        print("start of loop")
+                        if guess.lower() == poke.name.lower():
+                            tries += 1
+                            self.round += 1
+                            self.logRound(poke, mode, tries, total_shown, gen_select, self.results, self.round)
+                            self.winMessageAndNextMove(poke, select, mode, tries, total_shown, gen_select)
+                        elif "hint" == guess.lower() != poke.name.lower():
+                            total_shown += 1
+                            self.updateWindow2(self.hints(total_shown, mode, poke), append=True)
+                            print(total_shown)
+                            break
+                        elif guess.lower() != poke.name.lower():
+                            tries += 1
+                            self.prompt.Update("Incorrect. Tries: {}".format(tries))
+                            break
+
+
 
     def winMessageAndNextMove(self, poke, select, mode, tries, total_shown, gen_select):
         print("Correct! It took you " + str(tries) + " tries.\n Get another Pokemon: Y\n Quit: N "
@@ -70,27 +113,27 @@ class mainMode(GameSetup.setup):
     def hints(self, total_shown, mode, poke):
         # easy
         if mode == "easy" and total_shown == 1:
-            print(poke.name)
+            return poke.name
         elif mode == "easy" and total_shown > 1:
-            print("It's literally {}".format(poke.name))
+            return "It's literally {}".format(poke.name)
         # medium
         if mode == "medium" and total_shown == 1:
-            print(poke.getDesc("easy"))
+            return poke.getDesc("easy")
         elif mode == "medium" and total_shown == 2:
             poke.showImage("easy")
         elif mode == "medium" and total_shown == 3:
-            print(poke.name)
+            return poke.name
         elif mode == "medium" and total_shown > 3:
-            print("Out of hints")
+            return "Out of hints"
         # hard
         if mode == "hard" and total_shown == 1:
-            print("First Appearance: {}".format(poke.firstGens))
+            return "First Appearance: {}".format(poke.firstGens)
         elif mode == "hard" and total_shown == 2:
-            print("First letter: {}".format(poke.name[0]))
+            return "First letter: {}".format(poke.name[0])
         elif mode == "hard" and total_shown == 3:
             poke.showImage("medium")
         elif mode == "hard" and total_shown > 3:
-            print("Out of hints")
+            return "Out of hints"
 
     def logRound(self, poke, mode, tries, total_shown, gen_select, results, roundNum):
         print("inside log round")
@@ -101,3 +144,13 @@ class mainMode(GameSetup.setup):
         results.update({round: {"Pokemon ": poke.name, "mode ": mode, "tries ": tries}})
         print(results)
         return results
+
+    def updateWindow2(self, message, append=False):
+        if not append:
+            self.introMessage.Update(message)
+        elif append:
+            self.introMessage.Update("{}\n{}".format(self.introMessage.Get(), message))
+
+if __name__ == '__main__':
+    select =[45,678,4,5,23]
+    mainMode(select, "easy", "gen 1")

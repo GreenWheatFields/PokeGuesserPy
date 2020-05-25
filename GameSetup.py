@@ -1,4 +1,3 @@
-
 import sys
 from random import shuffle
 import PySimpleGUI as sg
@@ -27,7 +26,6 @@ class setup():
         self.selectedGen = self.selectedMode = False
         self.sameLoop = True
 
-
     def build(self):
         global select, gen_select, mode
         while True:
@@ -42,10 +40,10 @@ class setup():
                 if not self.selectedGen:
                     select, gen_select = self.gen_selector(self.values['-IN-'])
                 elif self.selectedGen and not self.selectedMode:
-                    self.selectedMode, mode = self.mode_select(select, gen_select, str(self.values['-IN-']))
+                    self.selectedMode, mode = self.mode_select(select, gen_select, self.values['-IN-'])
                 elif self.selectedGen and self.selectedMode:
+                    self.window.close()
                     x = GameModes.mainMode(select, mode, gen_select)
-
                 else:
                     print("here2")
 
@@ -113,13 +111,15 @@ class setup():
 
         return select, gen_select,  # probably redundant
 
-    def mode_select(self, select, gen_select, mode : str):
+    def mode_select(self, select, gen_select, input):
+        mode = str(input)
 
-        if mode.lower() == "easy" or "medium" or "hard":
+        if mode.lower() == "easy" or mode.lower() == "medium" or mode.lower() == "hard":
             self.updateWindow("{} mode seclect".format(mode.capitalize()))
-            print()
-            return True, mode.lower()
+            print(mode.lower())
+            return True, str(mode).lower()
         else:
+            print("here")
             self.updateWindow("Invalid mode: ")
             return False, mode
 

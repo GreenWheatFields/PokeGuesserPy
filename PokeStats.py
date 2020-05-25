@@ -80,6 +80,7 @@ class Pokemon:
         elif self.name == "porygon-z":
             self.parseKey = self.urlName = "Porygon-Z"
             self.name = "Porygon Z"
+            #492
         else:
             self.parseKey = self.urlName = self.name
 
@@ -115,7 +116,7 @@ class Pokemon:
                                                                                                    self.heightInFeet,
                                                                                                    self.weightInLbs,
                                                                                                    self.baseExp)
-        if mode == "medium" or "easy":
+        if mode == "medium" or mode == "easy":
             message += "Type: {}\nFirst Gens: {}\n\nFirst Letter: {}\n Description:\n '{}'".format(self.types, self.firstGens, self.name[0], self.desc)
 
         return message
