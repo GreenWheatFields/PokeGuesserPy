@@ -10,8 +10,8 @@ class setup():
 
         # intialize GUI
         self.imLocation = r"res\\16627.png"
-        self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(300, 300))
-        self.message = "Welcome message. Select generation, gen 1 -7 or All\n"
+        self.imageElem = sg.Image(key='SHOW', size=(300, 300))
+        self.message = "Welcome to PokeGuesser!\nPlease select a generation of Pokemon, 1 - 7 or 'All'.\n EX: 'gen 6' , 'all'"
         self.input = sg.InputText(key='-IN-', size=(90, 12), do_not_clear=False)
         self.prompt = sg.Text('Response')
         self.introMessage = sg.Text(self.message, size=(15, 15))
@@ -58,7 +58,7 @@ class setup():
         # should describe max generations and all
         gen_select = response
         print(response)
-        # gen_select = input("Welcome message. Select generation, gen 1 -7 or All\n")
+        
         while 1 < 2:
 
             if gen_select.lower() == "gen 1":
@@ -105,8 +105,8 @@ class setup():
 
         shuffle(select)
 
-        self.updateWindow(gen_select.capitalize() + " Selected:\n Now select a Mode. easy, medium, or hard")
-        self.introMessage.Update(gen_select.capitalize() + " Selected:\n Now select a Mode. easy, medium, or hard")
+        self.updateWindow(gen_select.capitalize() + " Selected:\n Now select a mode Easy, Medium, or Hard:\n Easy mode: Detailed picture, over 7 in game attributes\n\nMedium: In game sprite, slightly less in game stats.\n\n Hard: 4 in game stats, no picture\n\n Type: 'easy', ' medium' , or 'hard'")
+        # self.introMessage.Update(gen_select.capitalize() + " Selected:\n Now select a Mode. easy, medium, or hard")
         self.canContinue = self.selectedGen = True
 
         return select, gen_select,  # probably redundant
@@ -115,7 +115,7 @@ class setup():
         mode = str(input)
 
         if mode.lower() == "easy" or mode.lower() == "medium" or mode.lower() == "hard":
-            self.updateWindow("{} mode seclect".format(mode.capitalize()))
+            self.updateWindow("{} mode selected.\n press Enter".format(mode.capitalize()))
             print(mode.lower())
             return True, str(mode).lower()
         else:

@@ -9,7 +9,7 @@ class mainMode():
     def __init__(self, select, mode, gen_select):
         # intialize GUI
         self.imLocation = r"res\\16627.png"
-        self.imageElem = sg.Image(filename=self.imLocation, key='SHOW', size=(150, 150))
+        self.imageElem = sg.Image(key='SHOW', size=(150, 150))
         self.message = "PRESS ENTER TWICE TO LOAD POKEMON\n"
         self.input = sg.InputText(key='-IN-', size=(90, 12), do_not_clear=False)
         self.prompt = sg.Text('Response', size=(20, 1))
@@ -65,6 +65,7 @@ class mainMode():
                 print(self.values)
                 if not self.hasLoadedPokemon:
                     self.updateWindow2(poke.message(mode))
+                    self.updateWindow2("TYPE HINT FOR HINT", append=True)
                     self.imageElem.Update(data=poke.showImage(mode), size=(300, 300))
                     self.hasLoadedPokemon = True
                 elif self.hasLoadedPokemon and not self.newRound:
@@ -100,12 +101,15 @@ class mainMode():
 
         if str(response).lower() == "y":
             self.hasLoadedPokemon = self.newRound = False
+            self.updateWindow2("PRESS ENTER TO LOAD NEW POKEMON")
             self.main_mode(select, mode, gen_select)
+            
         elif response.lower() == "n":
             print("Thank you for playing.")
             sys.exit()
         elif response.lower() == "r":
             # reset game
+            self.window.close
             GameSetup.setup()
 
 
@@ -124,7 +128,8 @@ class mainMode():
         if mode == "medium" and total_shown == 1:
             return poke.getDesc("easy")
         elif mode == "medium" and total_shown == 2:
-            poke.showImage("easy")
+            self.imageElem.Update(data=poke.showImage("easy")) 
+            self.updateWindow2("\n Detailed picture", append=True)
         elif mode == "medium" and total_shown == 3:
             return poke.name
         elif mode == "medium" and total_shown > 3:
@@ -158,4 +163,4 @@ class mainMode():
 if __name__ == '__main__':
     # for testing
     select = [1, 2, 3, 4, 5 ,6 ,7 ,8 ,9]
-    mainMode(select, "easy", "gen 1")
+    mainMode(select, "medium", "gen 1")
